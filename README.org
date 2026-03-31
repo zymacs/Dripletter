@@ -1,0 +1,36 @@
+* Dripletter
+A pdf book drip service to increase likelihood for reading through huge books. 
+
+** Description
+The app, a cli script for now, takes a file provided by a user and slices it up into user-defined size portions  and emails that to user-defined list of emails.
+The user defines how often and when the mailing happens using natural language phrases like:
+  - "Every day at 10:00pm"
+  - "Every Mon, Tue, Wed at 6:00".
+
+** Dependencies
+- smtplib
+- pymupdf
+- python-crontab
+
+** Installation
+- Clone this repository to some location on your system
+- Change directory to the downloaded folder repo
+- Create and activate a virtual environment
+- Install all dependencies using the provided requirements.txt file
+- Go to google and get and app password
+- Go to config.py and fill in your email and the emails the split pdf files will be sent to
+  - Fill in your app password too
+** Undone features
+- [ ] Shift from dependence on Unix' cron to a solution that's platform independent
+- [ ] Attach book cover to email submission.
+- [ ] Provide programmatic interface for modifying email frequency after the fact. 
+     - Currently the only means to do this is to delete the folder of split books then do that  same table in the app database also.
+- [ ] Calculate when the last submission will be based on chosen email frequency.
+- [ ] Implementing a better means to store the app password.
+- [ ] Creating a docker file for the app
+
+** Installation and sample usage video
+
+
+
+  
