@@ -7,7 +7,7 @@ The user defines how often and when the mailing happens using natural language p
   - "Every day at 10:00pm"
   - "Every Mon, Tue, Wed at 6:00".
 
-** Dependencies
+** External Dependencies
 - smtplib
 - pymupdf
 - python-crontab
