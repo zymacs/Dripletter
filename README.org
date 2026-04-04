@@ -25,9 +25,9 @@ The user defines how often and when the mailing happens using natural language p
 - [ ] Provide programmatic interface for modifying email frequency after the fact. 
      - Currently the only means to do this is to delete the folder of split books then do that  same table in the app database also.
 - [ ] Calculate when the last submission will be based on chosen email frequency.
-- [ ] Implementing a better means to store the app password.
-- [ ] Creating a docker file for the app
-
+- [ ] Implement a better means to store the app password. (Move to dotenv)
+- [ ] Create a docker file for the app
+- [ ] Create a GUI for the app.
 
 
 
