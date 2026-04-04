@@ -28,7 +28,7 @@ The user defines how often and when the mailing happens using natural language p
 - [ ] Implementing a better means to store the app password.
 - [ ] Creating a docker file for the app
 
-** Installation and sample usage video
+
 
 
 
