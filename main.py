@@ -9,7 +9,7 @@ from cronconverter import CronConverter
 from file_manager import FileSearch
 from db_manager import DBManager
 
-import config
+
 
 
 scheduler = Scheduler(config.user)
@@ -197,6 +197,7 @@ def main():
     # TODO:  check config to make sure all that is required is set before running anything.
     if not create_config():
         exit()
+    import config
     print("Searching for file to split")
     os.system('clear')
     search_term = input('Enter search term: ')
