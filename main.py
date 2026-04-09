@@ -10,10 +10,10 @@ from file_manager import FileSearch
 from db_manager import DBManager
 
 
+scheduler = ''
+cronconverter = ''
 
 
-scheduler = Scheduler(config.user)
-cronconverter = CronConverter()
 
 def add_split_pdfs_to_db(split_pdfs, db_manager, table_name, broadcast_frequency):
     
@@ -198,6 +198,10 @@ def main():
     if not create_config():
         exit()
     import config
+    global scheduler, cronconverter
+    scheduler = Scheduler(config.user)
+    cronconverter = CronConverter()
+
     print("Searching for file to split")
     os.system('clear')
     search_term = input('Enter search term: ')
