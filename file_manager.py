@@ -4,7 +4,7 @@ import os
 class FileSearch:
 
     @staticmethod
-    def search(query, target_dir=documents_location):
+    def search(query, target_dir):
         results = []
         for root, dirs, files in os.walk(target_dir):
             for file in files:
