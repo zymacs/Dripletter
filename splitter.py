@@ -39,7 +39,7 @@ class Splitter:
             
 
             x =  split_first_page + self.split_size
-            if x > self.to_page: # extra pages territory, crossing splitting bounds
+            if x > self.to_page+1: # extra pages territory, crossing splitting bounds
                 break
             part_num = part_num+1
             new_pdf = pymupdf.open()

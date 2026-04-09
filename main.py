@@ -85,6 +85,7 @@ import sys
 
 REQUIRED_FIELDS = [
     "base_wdir",
+    "documents_location",
     "user",
     "sender_email",
     "sender_pass",
@@ -126,6 +127,9 @@ def prompt_user_config():
     print("[i] If you do not have the app password yet, you can get it from : https://myaccount.google.com/apppasswords")
     sender_pass = input("Sender app password: ").strip()
 
+    print("[i] Documents location uri: Full uri for where your docs are located. /home/username/dirname ")
+    documents_location = input("Documentsi location uri: ")
+
     print("[i] Split size: How much you wish to read per session/day for some given document")
     split_size = input("Default split size (int, default 5): ").strip()
     split_size = int(split_size) if split_size else 5
@@ -143,6 +147,7 @@ def prompt_user_config():
         "sender_pass": sender_pass,
         "default_split_size": split_size,
         "default_recepients": recipients,
+        "documents_location": documents_location,
     }
 
 
@@ -153,6 +158,10 @@ base_wdir = Path.cwd()
 if not base_wdir.exists():
     base_wdir.mkdir()
 
+documents_location = '{data["documents_location"]}'
+if not documents_location.exists():
+    documents_location.mkdir()
+    
 user = '{data["user"]}'
 
 sender_email = '{data["sender_email"]}'

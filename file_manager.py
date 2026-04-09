@@ -1,10 +1,11 @@
 import sys
 import os
+import config
 
 class FileSearch:
 
     @staticmethod
-    def search(query, target_dir='/home/keith/Digital_alexandria'):
+    def search(query, target_dir=config.documents_location):
         results = []
         for root, dirs, files in os.walk(target_dir):
             for file in files:
