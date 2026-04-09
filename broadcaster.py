@@ -15,10 +15,15 @@ from db_manager import DBManager
 
 # update db
 
+# -- updated algo
+# check db
+# check what is not sent that has send time set to now
+# send that
+
 def get_time_now():
-    utc_time = datetime.now()
-    day,month,year,hour,minute = (utc_time.day,utc_time.month,utc_time.year,utc_time.hour,utc_time.minute)
-    return  '.'.join([day,month,year,hour,minute])
+    time_now = datetime.now()
+    day,month,year,hour,minute = (time_now.day,time_now.month,time_now.year,time_now.hour,time_now.minute)
+    return  hour, minute, '.'.join([str(day),str(month),str(year),str(hour),str(minute)])
 
 mailer = Mailer(config.sender_email, config.sender_pass)
 recepients = config.default_recepients
@@ -33,7 +38,11 @@ tables = [table_tup[0] for table_tup in table_tups]
 
 
 for table in tables:
-    check_query = f"SELECT id,file_name,file_path from {table} WHERE send_date IS NULL"
+    if '_table' not in table:
+        continue
+    hour, minute, time_now = get_time_now()
+    time_str_24h = f'{hour}:{minute}'
+    check_query = f"SELECT id,file_name,file_path from {table} WHERE send_date IS NULL AND planned_send_time='{time_str_24h}'"
     all_entries = db_manager.execute(check_query).fetchall()
     num_entries = len(all_entries)
     file_id, file_name, file_path = all_entries[0] if num_entries > 0 else (None, None, None)
@@ -56,7 +65,9 @@ for table in tables:
     mailer.send_mail(recepients, raw_message, attachment_uri)
 
     # update date for sent file with current date
-    time_now = get_time_now()
+    
+    hour, minute, time_now = get_time_now()
     row_update_query = f'UPDATE {table} SET send_date = ?, send_status = ? WHERE id = ?'
     values = [time_now, 'sent', file_id]
     db_manager.execute(row_update_query, values)
+    db_manager.commit()
