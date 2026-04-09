@@ -12,6 +12,7 @@ from db_manager import DBManager
 
 scheduler = ''
 cronconverter = ''
+config = ''
 
 
 
@@ -198,10 +199,10 @@ def main():
     if not create_config():
         exit()
     import config
-    global scheduler, cronconverter
+    global scheduler, cronconverter, config
+    config = config
     scheduler = Scheduler(config.user)
     cronconverter = CronConverter()
-
     print("Searching for file to split")
     os.system('clear')
     search_term = input('Enter search term: ')
