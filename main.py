@@ -219,7 +219,7 @@ def main():
     while pdf_file is None:
         print(f"{search_term} not found")
         search_term = input('Enter search term: ')
-        pdf_file =   FileSearch.search(search_term)
+        pdf_file =   FileSearch.search(search_term, config.documents_location)
     print("Opening the file so you can confirm start page and end page for section that'll be spliced")
     time.sleep(3)
     os.system(f'xdg-open "{pdf_file}"')
