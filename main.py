@@ -1,6 +1,6 @@
 import os
 import time
-
+import getpass
 from pathlib import Path
 
 from splitter import Splitter
@@ -10,6 +10,7 @@ from file_manager import FileSearch
 from db_manager import DBManager
 
 import config
+
 
 scheduler = Scheduler(config.user)
 cronconverter = CronConverter()
@@ -73,8 +74,129 @@ def clean_table_name(name):
         name = name[:14]
     return name
 
+
+def create_config():
+    if os.path.exists('config.py'):
+        pass
+
+import importlib.util
+import sys
+
+REQUIRED_FIELDS = [
+    "base_wdir",
+    "user",
+    "sender_email",
+    "sender_pass",
+    "db_uri",
+    "logs_file",
+    "default_split_size",
+    "default_recepients",
+]
+
+def load_config_module():
+    spec = importlib.util.spec_from_file_location("config", "config.py")
+    if spec is None:
+        return None
+    config = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(config)
+        return config
+    except Exception:
+        return None
+
+
+def validate_config(cfg):
+    for field in REQUIRED_FIELDS:
+        if not hasattr(cfg, field):
+            print(f"[Missing] {field}")
+            return False
+        value = getattr(cfg, field)
+        if value is None or value == "":
+            print(f"[Empty] {field}")
+            return False
+    return True
+
+
+def prompt_user_config():
+    print("Creating config.py")
+
+    user = input("System user: ").strip()
+    sender_email = input("Sender email: ").strip()
+    print("[i] If you do not have the app password yet, you can get it from : https://myaccount.google.com/apppasswords")
+    sender_pass = input("Sender app password: ").strip()
+
+    print("[i] Split size: How much you wish to read per session/day for some given document")
+    split_size = input("Default split size (int, default 5): ").strip()
+    split_size = int(split_size) if split_size else 5
+
+    print("[i] Recipients: Who the episodes or series will be mailed to. The default is you/your email.")
+    recipients = input("Default recipients (comma separated, blank = sender): ").strip()
+    if recipients:
+        recipients = [r.strip() for r in recipients.split(",")]
+    else:
+        recipients = [sender_email]
+
+    return {
+        "user": user,
+        "sender_email": sender_email,
+        "sender_pass": sender_pass,
+        "default_split_size": split_size,
+        "default_recepients": recipients,
+    }
+
+
+def write_config_file(data):
+    content = f"""from pathlib import Path
+
+base_wdir = Path.cwd()
+if not base_wdir.exists():
+    base_wdir.mkdir()
+
+user = '{data["user"]}'
+
+sender_email = '{data["sender_email"]}'
+sender_pass  = '{data["sender_pass"]}'
+
+# db settings
+db_uri = str(base_wdir) + '/cds.db'
+
+# logs
+logs_file = base_wdir / Path('cds_logs.txt')
+if not logs_file.exists():
+    logs_file.touch()
+
+# app defaults
+default_split_size = {data["default_split_size"]}
+default_recepients = {data["default_recepients"]}
+"""
+    with open("config.py", "w") as f:
+        f.write(content)
+
+
+def create_config():
+    if os.path.exists("config.py"):
+        cfg = load_config_module()
+        if cfg and validate_config(cfg):
+            return True
+        else:
+            print("Invalid config.py detected. Rebuilding...")
+
+    data = prompt_user_config()
+    write_config_file(data)
+
+    # re-load to confirm validity
+    cfg = load_config_module()
+    if cfg and validate_config(cfg):
+        return True
+
+    print("Failed to create valid config.")
+    return False
+
+    
 def main():
     # TODO:  check config to make sure all that is required is set before running anything.
+    if not create_config():
+        exit()
     print("Searching for file to split")
     os.system('clear')
     search_term = input('Enter search term: ')
