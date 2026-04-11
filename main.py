@@ -140,6 +140,7 @@ def prompt_user_config():
         recipients = [r.strip() for r in recipients.split(",")]
     else:
         recipients = [sender_email]
+    base_wdir = Path.cwd()
 
     return {
         "user": user,
@@ -148,16 +149,15 @@ def prompt_user_config():
         "default_split_size": split_size,
         "default_recepients": recipients,
         "documents_location": documents_location,
+        "base_wdir": base_wdir
     }
 
 
 def write_config_file(data):
     content = f"""from pathlib import Path
 
-base_wdir = Path.cwd()
-if not base_wdir.exists():
-    base_wdir.mkdir()
 
+base_wdir = '{data["base_wdir"]}'
 documents_location = '{data["documents_location"]}'
 if not documents_location.exists():
     documents_location.mkdir()
@@ -168,7 +168,7 @@ sender_email = '{data["sender_email"]}'
 sender_pass  = '{data["sender_pass"]}'
 
 # db settings
-db_uri = str(base_wdir) + '/cds.db'
+db_uri = base_wdir + '/cds.db'
 
 # logs
 logs_file = base_wdir / Path('cds_logs.txt')
