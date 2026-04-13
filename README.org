@@ -1,35 +1,148 @@
-* Dripletter
-A pdf book drip service to increase likelihood for reading through huge books. 
+# Dripletter
 
-** Description
-The app, a cli script for now, takes a file provided by a user and slices it up into user-defined size portions  and emails that to user-defined list of emails.
-The user defines how often and when the mailing happens using natural language phrases like:
-  - "Every day at 10:00pm"
-  - "Every Mon, Tue, Wed at 6:00".
+A PDF book drip service to increase likelihood for reading through huge books by emailing smaller portions on a user defined schedule.
 
-** External Dependencies
-- pymupdf
-- python-crontab
+## Description
 
-** Installation
-- Clone this repository to some location on your system
-- Change directory to the downloaded folder repo
-- Create and activate a virtual environment
-- Install all dependencies using the provided requirements.txt file
-- Go to google and get and app password
-- Go to config.py and fill in your email and the emails the split pdf files will be sent to
-  - Fill in your app password too
-** Undone features
-- [ ] Shift from dependence on Unix' cron to a solution that's platform independent
-- [ ] Attach book cover to email submission.
-- [ ] Provide programmatic interface for modifying email frequency after the fact. 
-     - Currently the only means to do this is to delete the folder of split books then do that  same table in the app database also.
-- [ ] Calculate when the last submission will be based on chosen email frequency.
-- [ ] Implement a better means to store the app password. (Move to dotenv)
-- [ ] Create a docker file for the app
-- [ ] Create a GUI for the app.
+Dripletter splits PDF files into configurable chunks and automatically emails them on a schedule you define. Define your schedule using natural language phrases like:
 
+- `"Every day at 10:00pm"`
+- `"Every Mon, Tue, Wed at 6:00"`
 
+The app uses system cron to manage scheduled broadcasts, SQLite for tracking deliveries, and Gmail SMTP for sending emails.
 
+## How It Works
 
-  
+1. **Search & Select** — Find a PDF in your documents folder
+2. **Configure** — Set page range, chunk size, and who receives it
+3. **Schedule** — Define when emails are sent using natural language
+4. **Automate** — Cron handles sending; the app tracks delivery status in the database
+
+## Requirements
+
+- Python 3.7+
+- Unix/Linux system (uses system cron)
+- Gmail account with app password enabled
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/kithenry/Dripletter.git
+cd Dripletter
+
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+## Configuration
+
+First run will prompt you to create `config.py` with these settings:
+
+```
+System user:          # Your Linux username
+Sender email:         # Gmail address sending the emails
+Sender app password:  # Google app password (not your regular password)
+Documents location:   # Full path to folder containing PDFs (e.g., /home/user/Books)
+Default split size:   # Default pages per email chunk (default: 5)
+Default recipients:   # Email addresses to receive broadcasts
+```
+
+**Getting a Google App Password:**
+1. Enable 2-factor authentication on your Google account
+2. Visit [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+3. Select "Mail" and "Linux"
+4. Copy the 16-character app password
+
+## Usage
+
+```bash
+python main.py
+```
+
+You'll be prompted to:
+
+1. **Search for a file** — Enter a search term to find your PDF
+2. **Confirm pages** — Opens PDF so you can set start/end pages (optional)
+3. **Set chunk size** — How many pages per email
+4. **Name the broadcast** — A short alias for this book (e.g., "dune")
+5. **Set schedule** — When to send emails (e.g., `"Every Saturday at 7:21pm"`)
+
+The app then:
+- Splits the PDF into chunks in `{working_dir}/{book_name}/`
+- Creates a database table to track delivery status
+- Adds a cron job to run `broadcaster.py` on your schedule
+
+## Dependencies
+
+- **pymupdf** — PDF manipulation and splitting
+- **python-crontab** — Create and manage cron jobs
+- **sqlalchemy** — Database ORM (SQLite)
+
+## File Structure
+
+```
+main.py              Entry point; handles setup and PDF splitting
+broadcaster.py       Cron job that sends queued emails
+mailer.py            Gmail SMTP sender
+splitter.py          PyMuPDF wrapper for splitting PDFs
+scheduler.py         Cron job manager (python-crontab wrapper)
+cronconverter.py     Parses natural language to cron syntax
+db_manager.py        SQLite database operations
+file_manager.py      File search in documents folder
+config.py            Generated on first run with your settings
+cds.db              SQLite database tracking broadcasts
+```
+
+## Current Limitations
+
+- **Unix/Linux only** — Requires system cron (future: platform-independent scheduler)
+- **Fixed chunk sizes** — All emails for a broadcast have same page count
+- **No pause/resume** — Must delete folder and database table to stop
+- **Manual management** — No CLI to modify schedules after creation
+- **No book covers** — Emails contain only PDF pages
+- **Command-line only** — No web or GUI interface yet
+
+## Database Schema
+
+Each broadcast creates a table `{alias}_table` with:
+
+```sql
+id                  (INTEGER PRIMARY KEY)
+file_name           (TEXT)
+file_path           (TEXT)
+send_status         (TEXT) — 'pending', 'sent', 'failed'
+send_date           (TEXT)
+broadcast_frequency (TEXT) — e.g., "Every day at 10:00pm"
+planned_send_time   (TEXT) — parsed from frequency
+```
+
+## Troubleshooting
+
+**"Document not found"**
+- Ensure PDF is in the folder specified in config.py
+- Check folder permissions
+
+**"xdg-open: command not found"**
+- Not available on all systems; the app tries to open the PDF for preview but continues without it
+
+**"Cron job not running"**
+- Verify cron daemon is active: `systemctl status cron`
+- Check that the system user in config.py matches your actual username
+
+**"Emails not sending"**
+- Verify Gmail app password (not your regular password)
+- Confirm 2FA is enabled on Google account
+- Check logs in `cds_logs.txt`
+
+## License
+
+MIT License — see [LICENSE](LICENSE) file
+
+## Contributing
+
+Pull requests welcome. See [Issues](https://github.com/kithenry/Dripletter/issues) for areas needing work.
