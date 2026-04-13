@@ -55,7 +55,7 @@ Default recipients:   # Email addresses to receive broadcasts
 **Getting a Google App Password:**
 1. Enable 2-factor authentication on your Google account
 2. Visit [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-3. Select "Mail" and "Linux"
+3. Follow the prompts to setup the password.
 4. Copy the 16-character app password
 
 ## Usage
