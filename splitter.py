@@ -45,7 +45,7 @@ class Splitter:
             new_pdf = pymupdf.open()
             for page_num in range(split_first_page, x):
                 print(f"Page: {page_num}") 
-                new_pdf.insert_pdf(self.pdf_doc, from_page=page_num, to_page=page_num)
+                new_pdf.insert_pdf(self.pdf_doc, from_page=page_num-1, to_page=page_num-1)
             split_out_path = os.path.join(self.out_folder, f"{self.pdf_name}-{part_num}.pdf")
             
             new_pdf.save(split_out_path)
