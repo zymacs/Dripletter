@@ -214,7 +214,7 @@ def main():
     print("Searching for file to split")
     os.system('clear')
     search_term = input('Enter search term: ')
-    pdf_file =   FileSearch.search(search_term)
+    pdf_file =   FileSearch.search(search_term, config.document_location)
     while pdf_file is None:
         print(f"{search_term} not found")
         search_term = input('Enter search term: ')
