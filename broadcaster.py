@@ -59,7 +59,7 @@ for table in tables:
        Attachment attached below\n\n
     """.format(file_name=file_name, part=file_id, total_parts=num_entries)
 
-    raw_message = {"body":mail_body, "subject": f'CDS-{file_name}'}
+    raw_message = {"body":mail_body, "subject": f'CDS-plus-{file_name}'}
 
     # add status check
     mailer.send_mail(recepients, raw_message, attachment_uri)
