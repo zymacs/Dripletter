@@ -234,7 +234,7 @@ def main():
     split_size = int(input("[+] Enter split size: ")) or config.default_split_size
     
     db_manager = init_db()
-    out_folder = config.base_wdir / Path(pdf_file).stem
+    out_folder = Path(config.base_wdir) / Path(pdf_file).stem
     if not out_folder.exists():
         out_folder.mkdir()
     split_pdfs = split_pdf(pdf_file, split_size, from_page, to_page, out_folder)
