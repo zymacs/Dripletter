@@ -103,7 +103,8 @@ def load_config_module():
     try:
         spec.loader.exec_module(config)
         return config
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -159,8 +160,6 @@ def write_config_file(data):
 
 base_wdir = '{data["base_wdir"]}'
 documents_location = '{data["documents_location"]}'
-if not documents_location.exists():
-    documents_location.mkdir()
     
 user = '{data["user"]}'
 
@@ -171,7 +170,7 @@ sender_pass  = '{data["sender_pass"]}'
 db_uri = base_wdir + '/cds.db'
 
 # logs
-logs_file = base_wdir / Path('cds_logs.txt')
+logs_file = f'{base_wdir}/cds_logs.txt'
 if not logs_file.exists():
     logs_file.touch()
 
