@@ -41,9 +41,11 @@ for table in tables:
     if '_table' not in table:
         continue
     hour, minute, time_now = get_time_now()
-    time_str_24h = f'{hour}:{minute}'
+    time_str_24h = f'{hour}:{"0"+str(minute) if minute < 10 else minute}'
+    print(time_str_24h)
     check_query = f"SELECT id,file_name,file_path from {table} WHERE send_date IS NULL AND planned_send_time='{time_str_24h}'"
     all_entries = db_manager.execute(check_query).fetchall()
+    print(len(all_entries))
     num_entries = len(all_entries)
     file_id, file_name, file_path = all_entries[0] if num_entries > 0 else (None, None, None)
 
